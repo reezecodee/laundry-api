@@ -1,0 +1,60 @@
+#-----------------------------------------------------------------
+# TAHAP 1: "Builder"
+# - Tahap ini meng-install SEMUA dependensi (termasuk dev)
+# - Bertugas untuk meng-compile TypeScript (.ts) menjadi JavaScript (.js)
+#-----------------------------------------------------------------
+
+# Gunakan base image node 18
+FROM node:18-alpine AS builder
+
+# Set direktori kerja
+WORKDIR /usr/src/app
+
+# 1. Salin package.json dan lock file
+COPY package.json package-lock.json ./
+
+# 2. Install SEMUA dependensi (termasuk devDependencies)
+RUN npm ci
+
+# 3. Salin sisa kode sumber (file .ts, dll)
+COPY . .
+
+# 4. Jalankan script 'build' (misal: 'tsc') untuk membuat folder 'dist'
+RUN npm run build
+
+
+#-----------------------------------------------------------------
+# TAHAP 2: "Production"
+# - Tahap ini adalah image AKHIR yang akan Anda deploy.
+# - Image ini SANGAT bersih dan kecil.
+# - HANYA meng-install dependensi produksi.
+# - HANYA berisi kode .js yang sudah di-compile.
+#-----------------------------------------------------------------
+
+# Mulai lagi dari base image yang bersih
+FROM node:18-alpine
+
+# Set environment ke 'production'
+# Ini PENTING: 'npm ci' akan otomatis skip devDependencies
+ENV NODE_ENV=production
+
+# Set direktori kerja
+WORKDIR /usr/src/app
+
+# 1. Salin package.json dan lock file
+COPY package.json package-lock.json ./
+
+# 2. Install HANYA dependensi produksi
+# (npm ci akan membaca NODE_ENV=production dan melewatkan devDependencies)
+RUN npm ci --omit=dev
+
+# 3. Salin folder 'dist' (hasil build) dari tahap 'builder'
+# Ini adalah "sihir" multi-stage:
+COPY --from=builder /usr/src/app/dist ./dist
+
+# 4. Expose port aplikasi Anda
+EXPOSE 3000
+
+# 5. Jalankan aplikasi menggunakan PM2 (dari package.json)
+# Perintah ini akan menjalankan script "prod" Anda
+CMD [ "npm", "prod" ]

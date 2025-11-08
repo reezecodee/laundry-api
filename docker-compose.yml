@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # 1. Service Aplikasi Node.js Anda
+  api:
+    container_name: laundry_api
+    # Build image dari Dockerfile di direktori saat ini (.)
+    build: .
+    # Muat semua variabel dari file .env
+    env_file:
+      - .env
+    ports:
+      # Map port 3000 di host (laptop Anda) ke port 3000 di kontainer
+      # Format: "HOST:CONTAINER"
+      - "3000:3000"
+    volumes:
+      - ./localhost+2.pem:/usr/src/app/localhost.pem:ro
+      - ./localhost+2-key.pem:/usr/src/app/localhost-key.pem:ro
+      # Mount kode sumber Anda (hot-reloading)
+      # Apapun yang Anda ubah di 'src' akan langsung berubah di kontainer
+      - ./src:/usr/src/app/src
+      # Volume anonim untuk node_modules agar tidak tertimpa oleh host
+      - /usr/src/app/node_modules
+    # Pastikan service 'db' dimulai SEBELUM service 'api'
+    depends_on:
+      - db
+    restart: unless-stopped
+    # Command untuk menjalankan app (menggunakan ts-node-dev untuk hot-reload)
+    command: npm run dev
+
+  # 2. Service Database Postgres
+  db:
+    image: postgres:15-alpine
+    container_name: laundry_db
+    # Muat variabel .env (POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB)
+    env_file:
+      - .env
+    ports:
+      # Map port 5433 di host ke port 5432 di kontainer
+      # (Kita pakai 5433 agar tidak bentrok jika Anda punya Postgres lokal)
+      - "5433:5432"
+    volumes:
+      # Gunakan 'named volume' (didefinisikan di bawah) untuk persistensi data
+      - laundry_data_volume:/var/lib/postgresql/data
+    restart: always
+
+# Definisikan 'named volume' yang kita sebutkan di atas
+volumes:
+  laundry_data_volume:
