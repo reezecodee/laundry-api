@@ -14,8 +14,7 @@ Sebelum memulai, pastikan Anda memiliki software berikut di mesin Anda:
     <li>mkcert (Untuk membuat sertifikat SSL lokal yang tepercaya)</li>
 </ul>
 
-##### Instalasi mkcert (Wajib untuk HTTPS Lokal)
-
+Instalasi mkcert (Wajib untuk HTTPS Lokal)
 Lingkungan development aplikasi ini berjalan di HTTPS untuk meniru produksi dan mengaktifkan cookie `Secure`.
 
 1. Instal mkcert. Contoh di Windows (jalankan di PowerShell sebagai Administrator):
