@@ -57,4 +57,4 @@ EXPOSE 3000
 
 # 5. Jalankan aplikasi menggunakan PM2 (dari package.json)
 # Perintah ini akan menjalankan script "prod" Anda
-CMD [ "npm", "prod" ]
+CMD [ "npm", "run", "prod" ]

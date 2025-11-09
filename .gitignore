@@ -1,4 +1,5 @@
 node_modules
 .env
+.env.production
 localhost+2-key.pem
 localhost+2.pem

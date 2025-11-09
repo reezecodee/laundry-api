@@ -31,7 +31,7 @@ mkcert -install
 
 Anda hanya perlu melakukan ini satu kali saja di komputer Anda.
 
-### 🗝️ Generate Access dan Refresh Token
+### 🗝️ Generate Access & Refresh Token
 
 Jalankan dua kali perintah di bawah ini untuk mendapatkan access token dan refresh token, pastekan masing-masing ke env `ACCESS_TOKEN_SECRET` dan `REFRESH_TOKEN_SECRET`. Gunakan access dan refresh secret token yang sulit ditebak untuk menghasilkan keamanan yang optimal, semakin panjang dan sulit ditebak semakin aman pula kemanannya.
 
@@ -108,18 +108,19 @@ Untuk produksi, kita menggunakan `Dockerfile.prod` (multi-stage build) yang meng
 {
   "scripts": {
     "prod": "pm2-runtime start dist/index.js -i max",
+    "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
-    "dev": "ts-node-dev src/index.ts"
   },
   "dependencies": {
-    "pm2": "^5.3.1",
+    "pm2": "...",
     "express": "...",
     "cors": "..."
     // ...dependensi produksi lainnya
   },
   "devDependencies": {
-    "typescript": "...",
-    "ts-node-dev": "..."
+    "@types/bcrypt": "...",
+    "@types/cookie-parser": "...",
+    "@types/cors": "...",
     // ...devDependencies lainnya
   }
 }
@@ -146,7 +147,7 @@ docker run -d \
 ```
 
 - `--env-file ./.env.production`: Memuat variabel lingkungan dari file `.env.production`.
-  Perintah ini akan menjalankan `npm prod`, yang akan memanggil `pm2-runtime` dan menjalankan aplikasi Anda di semua core CPU yang tersedia (`-i max`).
+  Perintah ini akan menjalankan `npm run prod`, yang akan memanggil `pm2-runtime` dan menjalankan aplikasi Anda di semua core CPU yang tersedia (`-i max`).
 
 ### 📜 Perintah NPM Penting
 
@@ -155,4 +156,4 @@ docker run -d \
 - `npm ci --omit=dev` Perintah ini digunakan di dalam `Dockerfile.prod`. Ini akan menginstal hanya `dependencies` (produksi) dan melewatkan semua `devDependencies` untuk menjaga image tetap ringan dan aman.
 - `npm run dev` Menjalankan server development dengan `ts-node-dev` (hot-reload).
 - `npm run build` Meng-compile kode TypeScript (`.ts`) di `src/` menjadi JavaScript (`.js`) di `dist/`.
-- `npm prod` Menjalankan aplikasi produksi yang sudah di-build (dari `dist/`) menggunakan `pm2-runtime`.
+- `npm run prod` Menjalankan aplikasi produksi yang sudah di-build (dari `dist/`) menggunakan `pm2-runtime`.
