@@ -1,4 +1,4 @@
-import { User } from "../entities/user";
+import { User, UserRole } from "../entities/user";
 
 export interface LoginRequestDTO {
   username: string;
@@ -8,6 +8,7 @@ export interface LoginRequestDTO {
 export interface AuthPayload {
   id: number;
   username: string;
+  role: UserRole;
 }
 
 export interface LoginResponse {
@@ -38,6 +39,7 @@ export function toLoginResponse(
     user: {
       id: user.id,
       username: user.username,
+      role: user.role,
     },
     accessToken: accessToken,
     refreshToken: refreshToken,

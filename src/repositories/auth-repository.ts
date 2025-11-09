@@ -14,6 +14,7 @@ class AuthRepository {
         id: true,
         username: true,
         name: true,
+        role: true,
       },
     });
   }

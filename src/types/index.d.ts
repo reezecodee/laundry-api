@@ -1,9 +1,11 @@
 import { JwtPayload } from "jsonwebtoken";
+import { UserRole } from "../entities/user";
 
 export interface CustomJwtPayload {
   userInfo: {
     id: number;
     username: string;
+    role: UserRole;
   };
 }
 
@@ -13,6 +15,7 @@ declare global {
       user?: {
         id: number;
         username: string;
+        role: UserRole;
       };
     }
   }

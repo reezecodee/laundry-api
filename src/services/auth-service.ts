@@ -31,6 +31,7 @@ class AuthService {
     const payload = {
       id: user.id,
       username: user.username,
+      role: user.role
     };
 
     const accessSecret = process.env.ACCESS_TOKEN_SECRET!;

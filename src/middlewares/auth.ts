@@ -31,6 +31,7 @@ export const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
       req.user = {
         id: payload.userInfo.id,
         username: payload.userInfo.username,
+        role: payload.userInfo.role,
       };
 
       next();
