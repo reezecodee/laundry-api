@@ -1,17 +1,20 @@
 import {
   LoginResponse,
-  RequestLoginDTO,
+  LoginRequestDTO,
   toLoginResponse,
+  RequestRegisterDTO,
+  RegisterResponse,
+  toRegisterResponse,
 } from "../dtos/auth.dto";
 import { ResponseError } from "../errors/response-error";
 import AuthRepository from "../repositories/auth-repository";
-import { comparePassword } from "../utils/password";
+import { comparePassword, hashPassword } from "../utils/password";
 import { AuthValidator } from "../validators/auth.validator";
 import { Validator } from "../validators/validator";
 import jwt from "jsonwebtoken";
 
 class AuthService {
-  static async login(data: RequestLoginDTO): Promise<LoginResponse> {
+  static async login(data: LoginRequestDTO): Promise<LoginResponse> {
     const validated = Validator.validate(AuthValidator.LOGIN, data);
     const user = await AuthRepository.findByUsername(validated.username);
 
@@ -46,6 +49,27 @@ class AuthService {
     });
 
     return toLoginResponse(user, accessToken, refreshToken);
+  }
+
+  static async register(data: RequestRegisterDTO): Promise<RegisterResponse> {
+    const validated = Validator.validate(AuthValidator.REGISTER, data);
+    const existingUser = await AuthRepository.findByUsername(
+      validated.username
+    );
+
+    if (existingUser) {
+      throw new ResponseError(
+        409,
+        "Username sudah terdaftar, silahkan gunakan username lain."
+      );
+    }
+
+    validated.password = await hashPassword(validated.password);
+    const { confirmPassword, ...registerData } = validated;
+
+    const newUser = await AuthRepository.register(registerData);
+
+    return toRegisterResponse(newUser);
   }
 }
 

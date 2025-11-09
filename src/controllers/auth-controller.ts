@@ -1,13 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import AuthService from "../services/auth-service";
-import { AuthPayload, RequestLoginDTO } from "../dtos/auth.dto";
+import {
+  AuthPayload,
+  LoginRequestDTO,
+  RequestRegisterDTO,
+} from "../dtos/auth.dto";
 import jwt from "jsonwebtoken";
 
 class AuthController {
   static async login(req: Request, res: Response, next: NextFunction) {
     try {
       const { user, accessToken, refreshToken } = await AuthService.login(
-        req.body as RequestLoginDTO
+        req.body as LoginRequestDTO
       );
 
       res.cookie("refreshToken", refreshToken, {
@@ -28,7 +32,19 @@ class AuthController {
     }
   }
 
-  static async register(req: Request, res: Response, next: NextFunction) {}
+  static async register(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = await AuthService.register(req.body as RequestRegisterDTO);
+
+      res.status(201).json({
+        statusCode: 201,
+        message: "Register successful",
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 
   static async handleRefreshToken(
     req: Request,

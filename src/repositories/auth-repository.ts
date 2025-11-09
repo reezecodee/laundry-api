@@ -1,4 +1,5 @@
 import { AppDataSource } from "../config/data-source";
+import { RequestRegisterDTO } from "../dtos/auth.dto";
 import { User } from "../entities/user";
 
 class AuthRepository {
@@ -12,8 +13,16 @@ class AuthRepository {
       select: {
         id: true,
         username: true,
+        name: true,
       },
     });
+  }
+
+  static async register(data: RequestRegisterDTO) {
+    const userRepository = AppDataSource.getRepository(User);
+    const newUser = userRepository.create(data);
+
+    return await userRepository.save(newUser);
   }
 }
 

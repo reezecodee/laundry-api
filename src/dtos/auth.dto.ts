@@ -1,6 +1,6 @@
 import { User } from "../entities/user";
 
-export interface RequestLoginDTO {
+export interface LoginRequestDTO {
   username: string;
   password: string;
 }
@@ -11,9 +11,22 @@ export interface AuthPayload {
 }
 
 export interface LoginResponse {
-  user: AuthPayload
+  user: AuthPayload;
   accessToken: string;
   refreshToken: string;
+}
+
+export interface RequestRegisterDTO {
+  name: string;
+  username: string;
+  password: string;
+  confirmPassword?: string;
+}
+
+export interface RegisterResponse {
+  id: number;
+  name: string;
+  username: string;
 }
 
 export function toLoginResponse(
@@ -28,5 +41,13 @@ export function toLoginResponse(
     },
     accessToken: accessToken,
     refreshToken: refreshToken,
+  };
+}
+
+export function toRegisterResponse(user: User): RegisterResponse {
+  return {
+    id: user.id,
+    name: user.name,
+    username: user.username,
   };
 }
